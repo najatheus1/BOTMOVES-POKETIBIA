@@ -34,6 +34,8 @@ int main()
 					keybd_event(VK_F8, NULL, KEYEVENTF_KEYUP, NULL);
 					keybd_event(VK_F9, NULL, KEYEVENTF_KEYUP, NULL);
 					keybd_event(VK_F10, NULL, KEYEVENTF_KEYUP, NULL);
+					keybd_event(VK_F11, NULL, KEYEVENTF_KEYUP, NULL);
+					keybd_event(VK_F12, NULL, KEYEVENTF_KEYUP, NULL);
 					std::system("cls");
 					std::cout << "BOT PARADO!" << std::endl;
 				}
@@ -48,6 +50,8 @@ int main()
 					keybd_event(VK_F8, NULL, NULL, NULL);
 					keybd_event(VK_F9, NULL, NULL, NULL);
 					keybd_event(VK_F10, NULL, NULL, NULL);
+					keybd_event(VK_F11, NULL, NULL, NULL);
+					keybd_event(VK_F12, NULL, NULL, NULL);
 					std::system("cls");
 					std::cout << "BOT iniciado!" << std::endl;
 				}
