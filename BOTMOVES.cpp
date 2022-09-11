@@ -1,73 +1,47 @@
 #define _CRT_SECURE_NO_WARNINGS
+#define SIZE_POKEBAR 45
 
 #include <Windows.h>
 #include <iostream>
 #include <array>
 
-#define S_ 30
-#define TIME_POKEBAR 1700
+POINT cursor;
+HDC dc;
+char* name = new char[50];
 
 std::array<char, 2>key{};
 
 std::array<HWND, 2> window{};
-std::array<POINT, 2> cursor{}; /*
-								cursor[0] = cursor da pokebar
-								cursor[1] = janela de batalha
-								*/
 
-std::array<int, 4> pox_pokebar{}; /*
-						   pox[0] = pox_pokebar_x
-						   pox[1] = pox_pokebar_x_backup
-						   pox[2] = pox_pokebar_y
-						   pox[3] = pox_pokebar_y_backup
+std::array<int, 6> pos{}; /*
+						   pos[0] = pos_pokebar_x
+						   pos[1] = pos_janela_combate_x
+						   pos[2] = pos_pokebar_y
+						   pos[3] = pos_janela_combate_y
 						   */
 
-std::array<int, 3> count{};/*
+std::array<int, 2> count{};/*
 						   count[0] = define TIME_POKEBAR 2000
 						   count[1] = quantidade de pokebolas que o jogador tem
-						   count[2] = verifica se o jogador cofigurou o mouse
 						   */
 
-std::array<int, 2> v{};
-
-void MousePokebar() {
-	if (count[2] >= 1) {
-		if (v[0] >= 1) {
-			if (v[1] >= 1) {
-				SetCursorPos(pox_pokebar[1], pox_pokebar[3]);
-				mouse_event(0x0002, NULL, NULL, NULL, NULL);
-				mouse_event(0x0004, NULL, NULL, NULL, NULL);
-				Sleep(300);
-				SetCursorPos(pox_pokebar[0], pox_pokebar[2]);
-			}
-
-			if (count[0] >= S_ * count[1]) {
-				count[0] = S_;
-				pox_pokebar[2] = cursor[0].y - count[0] + count[0];
-				SetCursorPos(pox_pokebar[0], pox_pokebar[2]);
-				mouse_event(0x0002, NULL, NULL, NULL, NULL);
-				mouse_event(0x0004, NULL, NULL, NULL, NULL);
-				Sleep(TIME_POKEBAR);
-			}
-
-			mouse_event(0x0002, NULL, NULL, NULL, NULL);
-			mouse_event(0x0004, NULL, NULL, NULL, NULL);
-			count[0] = count[0] + S_;
-			std::cout << count[0] << std::endl;
-			pox_pokebar[2] = cursor[0].y + count[0];
-			SetCursorPos(pox_pokebar[0], pox_pokebar[2]);
-			Sleep(TIME_POKEBAR);
-			mouse_event(0x0002, NULL, NULL, NULL, NULL);
-			mouse_event(0x0004, NULL, NULL, NULL, NULL);
-		}
-	}
-}
+void __BOT__(void);
+void ATAQUE_KEYBOARD(void);
+void D_ATAQUE_KEYBOARD(void);
+void _CALLBACK_(void);
+void ClickCursor(int count_click);
+void ATAQUE_TARGET(void);
+void TROCA_POKEMON(void);
+void marcador(int pox_x, int pos_y);
+void BACKUP_CURSOR(void);
 
 int main()
 {
-	SetConsoleTitle("BOT MOVES (BY : SRNAJA)");
+	for (std::size_t i = 0; i <= 5; ++i) {
+		pos[i] = 0x0;
+	}
 
-	char* name = new char[50];
+	SetConsoleTitle("BOT MOVES (BY : SRNAJA)");
 	std::cout << "DIGITE O NOME DA JANELA DO POKETIBIA : " << std::endl;
 	std::cin >> name;
 	std::system("cls");
@@ -77,87 +51,154 @@ int main()
 	std::cout << "DIGITE A KEY QUE VOCE DESEJA LIGAR O BOT:" << std::endl;
 	std::cin >> key[0];
 	std::system("cls");
-	std::cout << "DIGITE A KEY QUE VOCE DESEJA DESLIGAR O BOT:" << std::endl;
+	std::cout << "DIGITE A KEY QUE VOCE DESEJA DAR O TARGET DO BOT:" << std::endl;
 	std::cin >> key[1];
 	std::system("cls");
 
-	
-	while (true) {
-		window[0] = FindWindow(name, NULL);
-		if (window[0]) {
-			window[1] = GetForegroundWindow();
-			if (window[0] == window[1]) {
-				if (GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(0x50)) {
-					std::cout << "COLOQUE O MOUSE EM CIMA DA POKEBAR!" << std::endl;
-					GetCursorPos(&cursor[0]);
-					pox_pokebar[0] = cursor[0].x;
-					pox_pokebar[2] = cursor[0].y;
-					v[0] = 1;
-					count[2] = 1;
-				}
+	while (pos[0] == 0x0 && pos[2] == 0x0) {
+		GetCursorPos(&cursor);
+		if (GetAsyncKeyState((int)'P')) {
+			system("cls");
+			std::cout << "SEGURE A LETRA 'P' PARA SALVAR A POSIÇÃO DO PRIMEIRO POKEMON DA POKEBAR!";
+			pos[0] = cursor.x;
+			pos[2] = cursor.y;
+		}
+		count[0] = pos[2] + (SIZE_POKEBAR * count[1]);
+	}
 
-				if (GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(VK_SHIFT) && GetAsyncKeyState(0x42)) {
-					std::cout << "COLOQUE O MOUSE EM CIMA DA JANELA DE BATALHA!" << std::endl;
-					GetCursorPos(&cursor[1]);
-					pox_pokebar[1] = cursor[1].x;
-					pox_pokebar[3] = cursor[1].y;
-					v[1] = 1;
-					count[2] = 1;
-				}
-
-				MousePokebar();
-
-
-				if (GetAsyncKeyState(toupper(key[1]))) {
-					keybd_event(VK_F1, NULL, KEYEVENTF_KEYUP, NULL);
-					keybd_event(VK_F2, NULL, KEYEVENTF_KEYUP, NULL);
-					keybd_event(VK_F3, NULL, KEYEVENTF_KEYUP, NULL);
-					keybd_event(VK_F4, NULL, KEYEVENTF_KEYUP, NULL);
-					keybd_event(VK_F5, NULL, KEYEVENTF_KEYUP, NULL);
-					keybd_event(VK_F6, NULL, KEYEVENTF_KEYUP, NULL);
-					keybd_event(VK_F7, NULL, KEYEVENTF_KEYUP, NULL);
-					keybd_event(VK_F8, NULL, KEYEVENTF_KEYUP, NULL);
-					keybd_event(VK_F9, NULL, KEYEVENTF_KEYUP, NULL);
-					keybd_event(VK_F10, NULL, KEYEVENTF_KEYUP, NULL);
-					keybd_event(VK_F11, NULL, KEYEVENTF_KEYUP, NULL);
-					keybd_event(VK_F12, NULL, KEYEVENTF_KEYUP, NULL);
-					std::system("cls");
-					std::cout << "BOT PARADO!" << std::endl;
-					std::cout << "CLIQUE DA POKEBAR PARADO!" << std::endl;
-					v[0] = 0;
-					v[1] = 0;
-				}
-
-				if (GetAsyncKeyState(toupper(key[0]))) {
-					v[0] = 1;
-					v[1] = 1;
-					keybd_event(VK_F1, NULL, NULL, NULL);
-					keybd_event(VK_F2, NULL, NULL, NULL);
-					keybd_event(VK_F3, NULL, NULL, NULL);
-					keybd_event(VK_F4, NULL, NULL, NULL);
-					keybd_event(VK_F5, NULL, NULL, NULL);
-					keybd_event(VK_F6, NULL, NULL, NULL);
-					keybd_event(VK_F7, NULL, NULL, NULL);
-					keybd_event(VK_F8, NULL, NULL, NULL);
-					keybd_event(VK_F9, NULL, NULL, NULL);
-					keybd_event(VK_F10, NULL, NULL, NULL);
-					keybd_event(VK_F11, NULL, NULL, NULL);
-					keybd_event(VK_F12, NULL, NULL, NULL);
-					MousePokebar();
-					std::system("cls");
-					std::cout << "BOT iniciado!" << std::endl;
-				}
-			}
-			else {
-				std::system("cls");
-				std::cout << "BOT PARADO!" << std::endl;
-				std::cout << "CLIQUE DA POKEBAR PARADO!" << std::endl;
-				v[0] = 0;
-				v[1] = 0;
-			}
+	while (pos[1] == 0x0 && pos[3] == 0x0) {
+		GetCursorPos(&cursor);
+		if (GetAsyncKeyState((int)'B')) {
+			std::cout << "SEGURE A LETRA 'B' PARA SALVAR A POSIÇÃO DA POKEBAR!";
+			system("cls");
+			pos[1] = cursor.x;
+			pos[3] = cursor.y;
 		}
 	}
+
+	_CALLBACK_();
 
 	return 0;
 }
 
+void _CALLBACK_(void) {
+	dc = GetDC(window[0]);
+
+	while (true) {
+		__BOT__();
+	}
+}
+
+void __BOT__(void) {
+	window[0] = FindWindow(name, NULL);
+	if (window[0]) {
+		window[1] = GetForegroundWindow();
+		if (window[0] == window[1]) {
+			GetCursorPos(&cursor);
+			if (!dc) {
+				dc = GetDC(window[0]);
+			}
+
+			if (pos[2] >= count[0]) {
+				pos[2] = pos[2] - (SIZE_POKEBAR * count[1]);
+			}
+
+			marcador(pos[0], pos[2]);
+			marcador(pos[1], pos[3]);
+			pos[4] = cursor.x;
+			pos[5] = cursor.y;
+
+			if (GetAsyncKeyState((int)'P')) {
+				system("cls");
+				std::cout << "SEGURE A LETRA 'P' PARA SALVAR A POSIÇÃO DO PRIMEIRO POKEMON DA POKEBAR!";
+				pos[0] = cursor.x;
+				pos[2] = cursor.y;
+				count[0] = pos[2] + (SIZE_POKEBAR * count[1]);
+			}
+
+			if (GetAsyncKeyState((int)'B')) {
+				std::cout << "SEGURE A LETRA 'B' PARA SALVAR A POSIÇÃO DA JANELA DE COMBATE!";
+				system("cls");
+				pos[1] = cursor.x;
+				pos[3] = cursor.y;
+			}
+
+			if (GetAsyncKeyState(toupper(key[0]))) {
+				ATAQUE_KEYBOARD();
+			}
+			else if (GetAsyncKeyState(toupper(key[1]))) {
+				TROCA_POKEMON();
+			}
+		}
+	}
+}
+
+void marcador(int pox_x, int pos_y) {
+	SetPixel(dc, pox_x, pos_y, RGB(0, 0, 0));
+	SetPixel(dc, pox_x + 1, pos_y, RGB(0, 0, 0));
+	SetPixel(dc, pox_x, pos_y + 1, RGB(0, 0, 0));
+	SetPixel(dc, pox_x + 1, pos_y + 1, RGB(0, 0, 0));
+	SetPixel(dc, pox_x - 1, pos_y, RGB(0, 0, 0));
+	SetPixel(dc, pox_x, pos_y - 1, RGB(0, 0, 0));
+	SetPixel(dc, pox_x - 1, pos_y - 1, RGB(0, 0, 0));
+	SetPixel(dc, pox_x + 2, pos_y, RGB(0, 0, 0));
+	SetPixel(dc, pox_x, pos_y + 2, RGB(0, 0, 0));
+	SetPixel(dc, pox_x + 2, pos_y + 2, RGB(0, 0, 0));
+	SetPixel(dc, pox_x - 2, pos_y, RGB(0, 0, 0));
+	SetPixel(dc, pox_x, pos_y - 2, RGB(0, 0, 0));
+	SetPixel(dc, pox_x - 2, pos_y - 2, RGB(0, 0, 0));
+}
+
+void ATAQUE_KEYBOARD(void) {
+	ATAQUE_TARGET();
+	for (BYTE i = VK_F1; i <= VK_F12; i++) {
+		keybd_event(i, NULL, NULL, NULL);
+	}
+	D_ATAQUE_KEYBOARD();
+}
+void D_ATAQUE_KEYBOARD(void) {
+	for (BYTE i = VK_F1; i <= VK_F12; ++i) {
+		keybd_event(i, NULL, KEYEVENTF_KEYUP, NULL);
+	}
+}
+
+void ClickCursor(int count_click) {
+	for (std::size_t i = 1; i <= count_click; i++) {
+		Sleep(200);
+		mouse_event(0x0002, NULL, NULL, NULL, NULL);
+		mouse_event(0x0004, NULL, NULL, NULL, NULL);
+		Sleep(200);
+	}
+}
+
+void ATAQUE_TARGET(void) {
+	GetCursorPos(&cursor);
+	while ((cursor.x != pos[1]) && (cursor.y != pos[3])) {
+		GetCursorPos(&cursor);
+		SetPhysicalCursorPos(pos[1], pos[3]);
+	}
+
+	ClickCursor(1);
+	BACKUP_CURSOR();
+}
+
+void TROCA_POKEMON(void) {
+	GetCursorPos(&cursor);
+	while ((cursor.x != pos[0]) && (cursor.y != pos[2])) {
+		GetCursorPos(&cursor);
+		SetPhysicalCursorPos(pos[0], pos[2]);
+	}
+
+	ClickCursor(1);
+
+	pos[2] = pos[2] + SIZE_POKEBAR;
+	BACKUP_CURSOR();
+}
+
+void BACKUP_CURSOR(void) {
+	GetCursorPos(&cursor);
+	while ((cursor.x != pos[4]) && (cursor.y != pos[5])) {
+		GetCursorPos(&cursor);
+		SetPhysicalCursorPos(pos[4], pos[5]);
+	}
+}
