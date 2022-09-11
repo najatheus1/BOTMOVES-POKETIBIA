@@ -125,9 +125,12 @@ void __BOT__(void) {
 
 			if (GetAsyncKeyState(toupper(key[0]))) {
 				ATAQUE_KEYBOARD();
+				ATAQUE_TARGET();
+				D_ATAQUE_KEYBOARD();
 			}
 			else if (GetAsyncKeyState(toupper(key[1]))) {
 				TROCA_POKEMON();
+				D_ATAQUE_KEYBOARD();
 			}
 		}
 	}
@@ -150,11 +153,9 @@ void marcador(int pox_x, int pos_y) {
 }
 
 void ATAQUE_KEYBOARD(void) {
-	ATAQUE_TARGET();
 	for (BYTE i = VK_F1; i <= VK_F12; i++) {
 		keybd_event(i, NULL, NULL, NULL);
 	}
-	D_ATAQUE_KEYBOARD();
 }
 void D_ATAQUE_KEYBOARD(void) {
 	for (BYTE i = VK_F1; i <= VK_F12; ++i) {
@@ -191,6 +192,7 @@ void TROCA_POKEMON(void) {
 
 	ClickCursor(1);
 	pos[2] = pos[2] + SIZE_POKEBAR;
+	ATAQUE_KEYBOARD();
 	BACKUP_CURSOR();
 }
 
