@@ -190,7 +190,6 @@ void TROCA_POKEMON(void) {
 	}
 
 	ClickCursor(1);
-
 	pos[2] = pos[2] + SIZE_POKEBAR;
 	BACKUP_CURSOR();
 }
