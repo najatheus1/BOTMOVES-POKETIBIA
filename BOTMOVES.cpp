@@ -9,7 +9,7 @@ POINT cursor;
 HDC dc;
 char* name = new char[50];
 
-std::array<char, 2>key{};
+std::array<char, 3>key{};
 
 std::array<HWND, 2> window{};
 
@@ -53,6 +53,9 @@ int main()
 	std::system("cls");
 	std::cout << "DIGITE A KEY QUE VOCE DESEJA DAR O TARGET DO BOT:" << std::endl;
 	std::cin >> key[1];
+	std::system("cls");
+	std::cout << "DIGITE A KEY QUE VOCE DESEJA PARAR O BOT:" << std::endl;
+	std::cin >> key[2];
 	std::system("cls");
 
 	while (pos[0] == 0x0 && pos[2] == 0x0) {
@@ -126,10 +129,11 @@ void __BOT__(void) {
 			if (GetAsyncKeyState(toupper(key[0]))) {
 				ATAQUE_KEYBOARD();
 				ATAQUE_TARGET();
-				D_ATAQUE_KEYBOARD();
 			}
 			else if (GetAsyncKeyState(toupper(key[1]))) {
 				TROCA_POKEMON();
+			}
+			else if (GetAsyncKeyState(toupper(key[2]))) {
 				D_ATAQUE_KEYBOARD();
 			}
 		}
@@ -192,7 +196,6 @@ void TROCA_POKEMON(void) {
 
 	ClickCursor(1);
 	pos[2] = pos[2] + SIZE_POKEBAR;
-	ATAQUE_KEYBOARD();
 	BACKUP_CURSOR();
 }
 
